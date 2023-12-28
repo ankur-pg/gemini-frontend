@@ -67,3 +67,7 @@
     width: calc(100% - 20px); /* Adjust width on smaller screens */
   }
 }
+
+.loading {
+  margin-top: 20px;
+}

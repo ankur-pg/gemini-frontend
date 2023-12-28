@@ -4,12 +4,14 @@ import './Home.css';
 function HomePage() {
   const [inputText, setInputText] = useState('');
   const [response, setResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${process.env.REACT_APP_GEMINI_API_URL}/chat`, {
         method: 'POST',
@@ -21,13 +23,14 @@ function HomePage() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      console.log(response)
       const data = await response.json();
       setResponse(data.message);
       setInputText('');
     } catch (error) {
       console.error('Error posting data:', error);
       setResponse({ error: 'Error fetching data' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,9 +42,11 @@ function HomePage() {
         value={inputText}
         onChange={handleInputChange}
         className="textarea"
-        placeholder="Type your question here...">
-      </textarea>
-      <button onClick={handleSubmit} className="button">Post</button>
+        placeholder="Type your question here..."
+        disabled={isLoading}
+      ></textarea>
+      <button onClick={handleSubmit} className="button" disabled={isLoading}>Post</button>
+      {isLoading && <div className="loading">Thinking ...</div>} {/* Loading indicator */}
       {response && (
         <div className="response">
           <pre>{response}</pre>
